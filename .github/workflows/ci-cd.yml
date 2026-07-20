@@ -39,6 +39,8 @@ jobs:
           context: ./llm-guard-frontend
           load: true
           tags: ${{ env.IMAGE_NAME }}:${{ env.SHORT_SHA }}
+          build-args: |
+            VITE_CLERK_PUBLISHABLE_KEY=${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -81,6 +83,8 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.SHORT_SHA }}
             ${{ env.IMAGE_NAME }}:latest
+          build-args: |
+            VITE_CLERK_PUBLISHABLE_KEY=${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
