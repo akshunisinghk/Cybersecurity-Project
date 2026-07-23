@@ -1,0 +1,4 @@
+# Local environment configuration. Do not commit secrets or machine-specific values.
+.env
+.env.*
+!.env.example
