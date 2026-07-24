@@ -21,6 +21,7 @@ const maxPromptLength = 10_000
 type config struct {
 	ollamaBaseURL string
 	ollamaModel   string
+	llmGuardURL   string
 }
 
 func main() {
@@ -29,9 +30,19 @@ func main() {
 		log.Fatal(err)
 	}
 
+	ollama := newOllamaClient(
+		appConfig.ollamaBaseURL,
+		appConfig.ollamaModel,
+	)
+
+	security := newSecurityClient(
+		appConfig.llmGuardURL,
+	)
+
 	e := echo.New()
+
 	e.GET("/health", healthCheck)
-	e.POST("/chat", chat(newOllamaClient(appConfig.ollamaBaseURL, appConfig.ollamaModel)))
+	e.POST("/chat", chat(ollama, security))
 
 	server := &http.Server{
 		Addr:              ":8080",
@@ -40,6 +51,7 @@ func main() {
 	}
 
 	log.Println("HTTP server listening on :8080")
+
 	if err := e.StartServer(server); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("HTTP server failed: %v", err)
 	}
@@ -53,6 +65,7 @@ func loadConfig() (config, error) {
 	loadedConfig := config{
 		ollamaBaseURL: os.Getenv("OLLAMA_BASE_URL"),
 		ollamaModel:   os.Getenv("OLLAMA_MODEL"),
+		llmGuardURL:   os.Getenv("LLM_GUARD_URL"),
 	}
 
 	if strings.TrimSpace(loadedConfig.ollamaBaseURL) == "" {
@@ -61,6 +74,10 @@ func loadConfig() (config, error) {
 
 	if strings.TrimSpace(loadedConfig.ollamaModel) == "" {
 		return config{}, errors.New("OLLAMA_MODEL is required")
+	}
+
+	if strings.TrimSpace(loadedConfig.llmGuardURL) == "" {
+		return config{}, errors.New("LLM_GUARD_URL is required")
 	}
 
 	return loadedConfig, nil
@@ -105,35 +122,80 @@ func newOllamaClient(baseURL, model string) *ollamaClient {
 	}
 }
 
-func chat(ollama *ollamaClient) echo.HandlerFunc {
+func chat(
+	ollama *ollamaClient,
+	security *securityClient,
+) echo.HandlerFunc {
+
 	return func(c echo.Context) error {
+
 		var request chatRequest
+
 		if err := c.Bind(&request); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid JSON request body")
+			return echo.NewHTTPError(
+				http.StatusBadRequest,
+				"invalid JSON request body",
+			)
 		}
 
 		if err := validatePrompt(request.Prompt); err != nil {
 			return err
 		}
 
-		result, err := ollama.generate(c.Request().Context(), request.Prompt)
+		securityResult, err := security.CheckPrompt(
+			c.Request().Context(),
+			request.Prompt,
+		)
+
 		if err != nil {
-			log.Printf("Ollama generation failed: %v", err)
-			return echo.NewHTTPError(http.StatusBadGateway, "LLM service is unavailable")
+			log.Printf("LLM Guard failed: %v", err)
+			return echo.NewHTTPError(
+				http.StatusBadGateway,
+				"Security service is unavailable",
+			)
 		}
 
-		return c.JSON(http.StatusOK, chatResponse{Answer: result.Response})
+		if securityResult.Decision == "BLOCK" {
+			return c.JSON(http.StatusForbidden, map[string]interface{}{
+				"message":    "Prompt blocked by LLM Guard",
+				"decision":   securityResult.Decision,
+				"risk_score": securityResult.RiskScore,
+				"reason":     "Prompt injection detected",
+			})
+		}
+
+		result, err := ollama.generate(
+			c.Request().Context(),
+			securityResult.SanitizedPrompt,
+		)
+
+		if err != nil {
+			log.Printf("Ollama generation failed: %v", err)
+			return echo.NewHTTPError(
+				http.StatusBadGateway,
+				"LLM service is unavailable",
+			)
+		}
+
+		return c.JSON(http.StatusOK, chatResponse{
+			Answer: result.Response,
+		})
 	}
 }
 
-func (client *ollamaClient) generate(ctx context.Context, prompt string) (ollamaGenerateResponse, error) {
+func (client *ollamaClient) generate(
+	ctx context.Context,
+	prompt string,
+) (ollamaGenerateResponse, error) {
+
 	body, err := json.Marshal(ollamaGenerateRequest{
 		Model:  client.model,
 		Prompt: prompt,
 		Stream: false,
 	})
 	if err != nil {
-		return ollamaGenerateResponse{}, fmt.Errorf("encode Ollama request: %w", err)
+		return ollamaGenerateResponse{},
+			fmt.Errorf("encode Ollama request: %w", err)
 	}
 
 	request, err := http.NewRequestWithContext(
@@ -143,23 +205,29 @@ func (client *ollamaClient) generate(ctx context.Context, prompt string) (ollama
 		bytes.NewReader(body),
 	)
 	if err != nil {
-		return ollamaGenerateResponse{}, fmt.Errorf("create Ollama request: %w", err)
+		return ollamaGenerateResponse{},
+			fmt.Errorf("create Ollama request: %w", err)
 	}
+
 	request.Header.Set("Content-Type", "application/json")
 
 	response, err := client.httpClient.Do(request)
 	if err != nil {
-		return ollamaGenerateResponse{}, fmt.Errorf("send Ollama request: %w", err)
+		return ollamaGenerateResponse{},
+			fmt.Errorf("send Ollama request: %w", err)
 	}
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		return ollamaGenerateResponse{}, fmt.Errorf("Ollama returned status %d", response.StatusCode)
+		return ollamaGenerateResponse{},
+			fmt.Errorf("Ollama returned status %d", response.StatusCode)
 	}
 
 	var result ollamaGenerateResponse
+
 	if err := json.NewDecoder(response.Body).Decode(&result); err != nil {
-		return ollamaGenerateResponse{}, fmt.Errorf("decode Ollama response: %w", err)
+		return ollamaGenerateResponse{},
+			fmt.Errorf("decode Ollama response: %w", err)
 	}
 
 	return result, nil
@@ -167,11 +235,17 @@ func (client *ollamaClient) generate(ctx context.Context, prompt string) (ollama
 
 func validatePrompt(prompt string) error {
 	if strings.TrimSpace(prompt) == "" {
-		return echo.NewHTTPError(http.StatusBadRequest, "prompt is required")
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			"prompt is required",
+		)
 	}
 
 	if len(prompt) > maxPromptLength {
-		return echo.NewHTTPError(http.StatusBadRequest, "prompt is too long")
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			"prompt is too long",
+		)
 	}
 
 	return nil
