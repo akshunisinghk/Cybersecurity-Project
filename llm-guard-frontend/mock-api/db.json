@@ -1,0 +1,60 @@
+{
+  "dashboard": {
+    "totalRequests": 12540,
+    "blockedPrompts": 214,
+    "safePrompts": 12326,
+    "activeModels": 4,
+    "todayThreats": 17,
+    "activeUsers": 82
+  },
+
+  "threats": [
+    {
+      "id": 1,
+      "type": "Prompt Injection",
+      "severity": "High",
+      "status": "Blocked",
+      "time": "10:15 AM"
+    },
+    {
+      "id": 2,
+      "type": "Jailbreak Attempt",
+      "severity": "Critical",
+      "status": "Blocked",
+      "time": "10:35 AM"
+    },
+    {
+      "id": 3,
+      "type": "PII Leak",
+      "severity": "Medium",
+      "status": "Detected",
+      "time": "11:00 AM"
+    }
+  ],
+
+  "users": [
+    {
+      "id": 1,
+      "name": "Alice",
+      "role": "Admin"
+    },
+    {
+      "id": 2,
+      "name": "Bob",
+      "role": "Security Analyst"
+    }
+  ],
+
+  "models": [
+    {
+      "id": 1,
+      "name": "GPT-4",
+      "status": "Running"
+    },
+    {
+      "id": 2,
+      "name": "Llama 3",
+      "status": "Running"
+    }
+  ]
+}
