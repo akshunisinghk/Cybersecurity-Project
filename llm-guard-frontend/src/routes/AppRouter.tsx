@@ -11,7 +11,7 @@ import Threats from "../pages/Threats";
 import Firewall from "../pages/Firewall";
 import DLP from "../pages/DLP";
 import LiveTraffic from "../pages/LiveTraffic";
-import Analytics from "../pages/Analytics";
+import Analytics from "../pages/Analytics/Analytics"; // ✅ Keep only this import
 import Alerts from "../pages/Alerts";
 import Users from "../pages/Users";
 import Models from "../pages/Models";
@@ -25,22 +25,13 @@ const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
-
-        {/* Public Authentication Routes */}
+        {/* Public Routes */}
         <Route element={<AuthLayout />}>
-          <Route 
-            path={ROUTES.LOGIN} 
-            element={<Login />} 
-          />
-
-          <Route 
-            path={ROUTES.SIGNUP} 
-            element={<Signup />} 
-          />
+          <Route path={ROUTES.LOGIN} element={<Login />} />
+          <Route path={ROUTES.SIGNUP} element={<Signup />} />
         </Route>
 
-
-        {/* Protected Application Routes */}
+        {/* Protected Routes */}
         <Route
           element={
             <ProtectedRoute>
@@ -48,80 +39,25 @@ const AppRouter = () => {
             </ProtectedRoute>
           }
         >
-          <Route
-            path={ROUTES.DASHBOARD}
-            element={<Dashboard />}
-          />
-
-          <Route 
-            path={ROUTES.THREATS} 
-            element={<Threats />} 
-          />
-
-          <Route 
-            path={ROUTES.FIREWALL} 
-            element={<Firewall />} 
-          />
-
-          <Route 
-            path={ROUTES.DLP} 
-            element={<DLP />} 
-          />
-
-          <Route 
-            path={ROUTES.LIVE_TRAFFIC} 
-            element={<LiveTraffic />} 
-          />
-
-          <Route 
-            path={ROUTES.ANALYTICS} 
-            element={<Analytics />} 
-          />
-
-          <Route 
-            path={ROUTES.ALERTS} 
-            element={<Alerts />} 
-          />
-
-          <Route 
-            path={ROUTES.USERS} 
-            element={<Users />} 
-          />
-
-          <Route 
-            path={ROUTES.MODELS} 
-            element={<Models />} 
-          />
-
-          <Route 
-            path={ROUTES.AUDIT_LOGS} 
-            element={<AuditLogs />} 
-          />
-
-          <Route 
-            path={ROUTES.SETTINGS} 
-            element={<Settings />} 
-          />
-
-          <Route 
-            path={ROUTES.PROFILE} 
-            element={<Profile />} 
-          />
-
+          <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
+          <Route path={ROUTES.THREATS} element={<Threats />} />
+          <Route path={ROUTES.FIREWALL} element={<Firewall />} />
+          <Route path={ROUTES.DLP} element={<DLP />} />
+          <Route path={ROUTES.LIVE_TRAFFIC} element={<LiveTraffic />} />
+          <Route path={ROUTES.ANALYTICS} element={<Analytics />} />
+          <Route path={ROUTES.ALERTS} element={<Alerts />} />
+          <Route path={ROUTES.USERS} element={<Users />} />
+          <Route path={ROUTES.MODELS} element={<Models />} />
+          <Route path={ROUTES.AUDIT_LOGS} element={<AuditLogs />} />
+          <Route path={ROUTES.SETTINGS} element={<Settings />} />
+          <Route path={ROUTES.PROFILE} element={<Profile />} />
         </Route>
 
-
-        {/* Fallback Route */}
+        {/* Fallback */}
         <Route
           path="*"
-          element={
-            <Navigate 
-              to={ROUTES.DASHBOARD} 
-              replace 
-            />
-          }
+          element={<Navigate to={ROUTES.DASHBOARD} replace />}
         />
-
       </Routes>
     </BrowserRouter>
   );

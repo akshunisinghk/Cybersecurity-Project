@@ -14,21 +14,24 @@ const DashboardStats = () => {
         setStats([
           {
             ...dashboardStats[0],
-            value: data.totalRequests.toLocaleString(),
+            value: (data?.totalRequests ?? 0).toLocaleString(),
           },
           {
             ...dashboardStats[1],
-            value: data.blockedPrompts.toLocaleString(),
+            value: (data?.blockedPrompts ?? 0).toLocaleString(),
           },
           {
             ...dashboardStats[2],
-            value: `${Math.round(
-              (data.safePrompts / data.totalRequests) * 100
-            )}%`,
+            value:
+              data?.totalRequests && data.totalRequests > 0
+                ? `${Math.round(
+                    ((data?.safePrompts ?? 0) / data.totalRequests) * 100
+                  )}%`
+                : "0%",
           },
           {
             ...dashboardStats[3],
-            value: data.activeModels.toString(),
+            value: (data?.activeModels ?? 0).toString(),
           },
         ]);
       } catch (error) {

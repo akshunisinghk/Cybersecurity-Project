@@ -1,6 +1,5 @@
-import api from "./api";
+import { dashboardData } from "../mock/dashboard";
 
 export const getDashboardStats = async () => {
-  const response = await api.get("/dashboard");
-  return response.data;
+  return Promise.resolve(dashboardData);
 };
