@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "mock-api": "json-server --watch mock-api/db.json --port 3001"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.61.9",
@@ -17,13 +18,14 @@
     "axios": "^1.18.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.42.2",
+    "json-server": "^1.0.0-beta.15",
     "lucide-react": "^1.25.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-hook-form": "^7.81.0",
     "react-hot-toast": "^2.6.0",
     "react-router-dom": "^7.18.1",
-    "recharts": "^3.9.2",
+    "recharts": "^3.10.1",
     "tailwindcss": "^4.3.3",
     "zod": "^4.4.3",
     "zustand": "^5.0.14"

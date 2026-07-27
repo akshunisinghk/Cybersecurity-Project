@@ -1,75 +1,167 @@
-# React + TypeScript + Vite
+# LLM Guard Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern cybersecurity dashboard built using **React**, **TypeScript**, **Vite**, and **Tailwind CSS**. The application provides a responsive interface for monitoring AI security, managing threats, analyzing traffic, and administering users.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Features
 
-## React Compiler
+### 🔐 Authentication
+- Clerk Authentication
+- Sign In / Sign Up
+- Protected Routes
+- User Profile Integration
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 📊 Dashboard
+- Dashboard Overview
+- Statistics Cards
+- Responsive Sidebar & Navbar
 
-## Expanding the ESLint configuration
+### 🛡️ Security Modules
+- Live Traffic Monitoring
+- Threat Detection
+- Firewall Management
+- Data Loss Prevention (DLP)
+- Alerts Management
+- Analytics Dashboard
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 👥 Administration
+- User Management
+- AI Models
+- Audit Logs
+- Settings
+- User Profile
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 🛠️ Tech Stack
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- React Router
+- Clerk Authentication
+- Axios
+- Recharts
+- Lucide React
 
+---
+
+## 📁 Project Structure
+
+```text
+src/
+├── components/
+├── pages/
+│   ├── Dashboard/
+│   ├── LiveTraffic/
+│   ├── Threats/
+│   ├── Firewall/
+│   ├── DLP/
+│   ├── Alerts/
+│   ├── Analytics/
+│   ├── Users/
+│   ├── Models/
+│   ├── AuditLogs/
+│   ├── Settings/
+│   └── Profile/
+├── services/
+├── routes/
+├── types/
+├── mock/
+└── assets/
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 📄 Available Pages
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Dashboard
+- Live Traffic
+- Threats
+- Firewall
+- Data Loss Prevention (DLP)
+- Alerts
+- Analytics
+- Users
+- AI Models
+- Audit Logs
+- Settings
+- Profile
 
+---
+
+## ⚙️ Installation
+
+Clone the repository
+
+```bash
+git clone <repository-url>
 ```
+
+Move into the frontend folder
+
+```bash
+cd llm-guard-frontend
+```
+
+Install dependencies
+
+```bash
+npm install
+```
+
+Start the development server
+
+```bash
+npm run dev
+```
+
+Build the project
+
+```bash
+npm run build
+```
+
+---
+
+## 📈 Current Progress
+
+### ✅ Completed
+
+- Clerk Authentication
+- Protected Routing
+- Responsive Dashboard Layout
+- Sidebar & Navbar
+- Dashboard Statistics
+- Live Traffic Page
+- Threats Page
+- Firewall Page
+- Data Loss Prevention (DLP)
+- Alerts Module
+- Analytics Module
+- Users Module
+- AI Models Page
+- Audit Logs Page
+- Settings Page
+- Profile Page
+- Mock Data Integration
+
+### 🚧 In Progress
+
+- Backend API Integration
+- Real-time Data Integration
+- Performance Optimization
+
+---
+
+## 👥 Team Project
+
+This project is being developed collaboratively. The frontend is built separately and will be integrated with backend services.
+
+---
+
+## 📄 License
+
+This project is developed for educational purposes.
