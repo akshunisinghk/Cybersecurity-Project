@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { threats, type Threat } from "../../mock/threats";
+import { threats } from "../../mock/threats";
 
 const Threats = () => {
   const [search, setSearch] = useState("");
