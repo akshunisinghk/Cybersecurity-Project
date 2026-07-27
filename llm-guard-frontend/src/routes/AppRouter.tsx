@@ -11,7 +11,7 @@ import Threats from "../pages/Threats";
 import Firewall from "../pages/Firewall";
 import DLP from "../pages/DLP";
 import LiveTraffic from "../pages/LiveTraffic";
-import Analytics from "../pages/Analytics/Analytics"; // ✅ Keep only this import
+import Analytics from "../pages/Analytics";
 import Alerts from "../pages/Alerts";
 import Users from "../pages/Users";
 import Models from "../pages/Models";
@@ -53,7 +53,13 @@ const AppRouter = () => {
           <Route path={ROUTES.PROFILE} element={<Profile />} />
         </Route>
 
-        {/* Fallback */}
+        {/* Default Route */}
+        <Route
+          path="/"
+          element={<Navigate to={ROUTES.DASHBOARD} replace />}
+        />
+
+        {/* 404 Route */}
         <Route
           path="*"
           element={<Navigate to={ROUTES.DASHBOARD} replace />}

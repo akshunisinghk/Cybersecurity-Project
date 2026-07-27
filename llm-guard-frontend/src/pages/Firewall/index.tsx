@@ -1,70 +1,63 @@
-import { useState } from "react";
-import { firewallRules, type FirewallRule } from "../../mock/firewall";
+import FirewallStatusCard from "../../components/firewall/FirewallStatusCard";
+import FirewallRuleTable from "../../components/firewall/FirewallRuleTable";
+import {
+  firewallRules,
+} from "../../mock/firewallRules";
 
-const Firewall = () => {
-  const [rules] = useState<FirewallRule[]>(firewallRules);
+const FirewallPage = () => {
+  const totalRules = firewallRules.length;
+
+  const activeRules = firewallRules.filter(
+    (rule) => rule.status === "Enabled"
+  ).length;
+
+  // Mock value for now
+  const blockedToday = 28;
 
   return (
     <div className="p-6 text-gray-200">
-      <h1 className="mb-6 text-2xl font-bold text-gray-100">
-        Firewall Rules
-      </h1>
 
-      <div className="overflow-x-auto rounded-xl border border-gray-700 bg-gray-900">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-gray-800 text-gray-300">
-              <th className="p-3 text-left">Rule</th>
-              <th className="p-3 text-left">Category</th>
-              <th className="p-3 text-left">Action</th>
-              <th className="p-3 text-left">Status</th>
-            </tr>
-          </thead>
+      {/* Header */}
 
-          <tbody>
-            {rules.map((rule) => (
-              <tr
-                key={rule.id}
-                className="border-t border-gray-700 transition hover:bg-gray-800"
-              >
-                <td className="p-3 text-gray-200">
-                  {rule.name}
-                </td>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-white">
+          Firewall
+        </h1>
 
-                <td className="p-3 text-gray-300">
-                  {rule.category}
-                </td>
-
-                <td
-                  className={`p-3 font-medium ${
-                    rule.action === "Block"
-                      ? "text-red-400"
-                      : rule.action === "Allow"
-                      ? "text-green-400"
-                      : "text-yellow-400"
-                  }`}
-                >
-                  {rule.action}
-                </td>
-
-                <td className="p-3">
-                  <span
-                    className={`rounded-full px-3 py-1 text-sm ${
-                      rule.status === "Active"
-                        ? "bg-green-900 text-green-300"
-                        : "bg-gray-700 text-gray-300"
-                    }`}
-                  >
-                    {rule.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <p className="mt-2 text-gray-400">
+          Configure and monitor AI firewall security rules.
+        </p>
       </div>
+
+      {/* Firewall Status */}
+
+      <FirewallStatusCard
+        status="Active"
+        totalRules={totalRules}
+        activeRules={activeRules}
+        blockedToday={blockedToday}
+      />
+
+      {/* Rules Header */}
+
+      <div className="mb-4 flex items-center justify-between">
+
+        <h2 className="text-2xl font-semibold text-white">
+          Firewall Rules
+        </h2>
+
+        <button className="rounded-lg bg-cyan-600 px-4 py-2 font-medium text-white transition hover:bg-cyan-500">
+          + Add Rule
+        </button>
+
+      </div>
+
+      {/* Rules Table */}
+
+      <FirewallRuleTable rules={firewallRules} />
+
     </div>
   );
 };
 
-export default Firewall;
+export default FirewallPage;

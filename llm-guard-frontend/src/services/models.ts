@@ -1,5 +1,12 @@
 import api from "./api";
-import type { Model } from "../types/model";
+
+export interface Model {
+  id: string;
+  name: string;
+  provider: string;
+  version: string;
+  status: string;
+}
 
 export const getModels = async (): Promise<Model[]> => {
   const response = await api.get("/models");
