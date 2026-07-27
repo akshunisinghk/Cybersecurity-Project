@@ -14,6 +14,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 const maxPromptLength = 10_000
@@ -41,7 +42,27 @@ func main() {
 
 	e := echo.New()
 
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{
+			"http://localhost:5173",
+		},
+		AllowMethods: []string{
+			http.MethodGet,
+			http.MethodPost,
+			http.MethodPut,
+			http.MethodDelete,
+			http.MethodOptions,
+		},
+		AllowHeaders: []string{
+			echo.HeaderOrigin,
+			echo.HeaderContentType,
+			echo.HeaderAccept,
+			echo.HeaderAuthorization,
+		},
+	}))
+
 	e.GET("/health", healthCheck)
+	e.GET("/dashboard/stats", dashboardStatsHandler)
 	e.POST("/chat", chat(ollama, security))
 
 	server := &http.Server{
@@ -85,6 +106,22 @@ func loadConfig() (config, error) {
 
 func healthCheck(c echo.Context) error {
 	return c.String(http.StatusOK, "ok\n")
+}
+
+type dashboardStats struct {
+	TotalRequests  int `json:"totalRequests"`
+	BlockedPrompts int `json:"blockedPrompts"`
+	SafePrompts    int `json:"safePrompts"`
+	ActiveModels   int `json:"activeModels"`
+}
+
+func dashboardStatsHandler(c echo.Context) error {
+	return c.JSON(http.StatusOK, dashboardStats{
+		TotalRequests:  1542,
+		BlockedPrompts: 87,
+		SafePrompts:    1455,
+		ActiveModels:   3,
+	})
 }
 
 type chatRequest struct {

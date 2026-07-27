@@ -1,5 +1,6 @@
-import { dashboardData } from "../mock/dashboard";
+import api from "../config/axios";
 
 export const getDashboardStats = async () => {
-  return Promise.resolve(dashboardData);
+  const response = await api.get("/dashboard/stats");
+  return response.data;
 };
