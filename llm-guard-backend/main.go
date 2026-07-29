@@ -63,8 +63,8 @@ func main() {
 
 	e.GET("/health", healthCheck)
 	e.GET("/dashboard/stats", dashboardStatsHandler)
+	e.GET("/threats", threatsHandler)
 	e.POST("/chat", chat(ollama, security))
-
 	server := &http.Server{
 		Addr:              ":8080",
 		Handler:           e,
@@ -122,6 +122,54 @@ func dashboardStatsHandler(c echo.Context) error {
 		SafePrompts:    1455,
 		ActiveModels:   3,
 	})
+}
+
+type Threat struct {
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	Type      string `json:"type"`
+	Severity  string `json:"severity"`
+	Status    string `json:"status"`
+	Timestamp string `json:"timestamp"`
+}
+
+func threatsHandler(c echo.Context) error {
+	threats := []Threat{
+		{
+			ID:        1,
+			Name:      "Prompt Injection Attack",
+			Type:      "Injection",
+			Severity:  "High",
+			Status:    "Blocked",
+			Timestamp: "2026-07-27 19:30",
+		},
+		{
+			ID:        2,
+			Name:      "Jailbreak Attempt",
+			Type:      "LLM Attack",
+			Severity:  "Critical",
+			Status:    "Blocked",
+			Timestamp: "2026-07-27 19:35",
+		},
+		{
+			ID:        3,
+			Name:      "Sensitive Information Exposure",
+			Type:      "Data Leakage",
+			Severity:  "Medium",
+			Status:    "Investigating",
+			Timestamp: "2026-07-27 19:42",
+		},
+		{
+			ID:        4,
+			Name:      "Malicious Prompt",
+			Type:      "Threat Detection",
+			Severity:  "High",
+			Status:    "Detected",
+			Timestamp: "2026-07-27 19:50",
+		},
+	}
+
+	return c.JSON(http.StatusOK, threats)
 }
 
 type chatRequest struct {
