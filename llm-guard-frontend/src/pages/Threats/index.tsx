@@ -1,8 +1,22 @@
-import { useState } from "react";
-import { threats, type Threat } from "../../mock/threats";
+import { useEffect, useState } from "react";
+import { getThreats } from "../../services/threats";
+import type { Threat } from "../../mock/threats";
 
 const Threats = () => {
-  const [threatList] = useState<Threat[]>(threats);
+ const [threatList, setThreatList] = useState<Threat[]>([]);
+
+useEffect(() => {
+  const fetchThreats = async () => {
+    try {
+      const data = await getThreats();
+      setThreatList(data);
+    } catch (error) {
+      console.error("Failed to load threats:", error);
+    }
+  };
+
+  fetchThreats();
+}, []);
 
   return (
     <div className="p-6 text-gray-200">
