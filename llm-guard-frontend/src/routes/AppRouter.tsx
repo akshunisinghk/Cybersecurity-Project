@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
 import ProtectedRoute from "./ProtectedRoute";
+import RouteLogger from "./RouteLogger";
 
 import Dashboard from "../pages/Dashboard";
 import Login from "../pages/Login";
@@ -24,6 +25,7 @@ import { ROUTES } from "../constants/routes";
 const AppRouter = () => {
   return (
     <BrowserRouter>
+      <RouteLogger />
       <Routes>
         {/* Public Routes */}
         <Route element={<AuthLayout />}>
