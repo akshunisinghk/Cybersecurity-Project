@@ -64,7 +64,19 @@ func main() {
 	e.GET("/health", healthCheck)
 	e.GET("/dashboard/stats", dashboardStatsHandler)
 	e.GET("/threats", threatsHandler)
+	e.GET("/alerts", alertsHandler)
+	e.GET("/firewall", firewallHandler)
+	e.GET("/dlp", dlpHandler)
+	e.GET("/analytics/cards", analyticsCardsHandler)
+	e.GET("/analytics/requests", requestsChartHandler)
+	e.GET("/analytics/threats", threatPieChartHandler)
+	e.GET("/analytics/models", modelUsageChartHandler)
+	e.GET("/users", usersHandler)
+	e.GET("/models", modelsHandler)
+	e.GET("/audit-logs", auditLogsHandler)
+	e.GET("/settings", settingsHandler)
 	e.POST("/chat", chat(ollama, security))
+
 	server := &http.Server{
 		Addr:              ":8080",
 		Handler:           e,
@@ -170,6 +182,361 @@ func threatsHandler(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, threats)
+}
+
+type Alert struct {
+	ID          int    `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Severity    string `json:"severity"`
+	Status      string `json:"status"`
+	Timestamp   string `json:"timestamp"`
+}
+
+func alertsHandler(c echo.Context) error {
+	alerts := []Alert{
+		{
+			ID:          1,
+			Title:       "Prompt Injection",
+			Description: "Prompt injection attack blocked.",
+			Severity:    "Critical",
+			Status:      "New",
+			Timestamp:   "2026-07-26 19:45",
+		},
+		{
+			ID:          2,
+			Title:       "PII Detection",
+			Description: "Sensitive information detected.",
+			Severity:    "High",
+			Status:      "Resolved",
+			Timestamp:   "2026-07-26 18:30",
+		},
+		{
+			ID:          3,
+			Title:       "Jailbreak Attempt",
+			Description: "LLM jailbreak attempt blocked.",
+			Severity:    "Critical",
+			Status:      "Blocked",
+			Timestamp:   "2026-07-26 20:15",
+		},
+		{
+			ID:          4,
+			Title:       "Malicious Prompt",
+			Description: "Suspicious prompt detected.",
+			Severity:    "Medium",
+			Status:      "Investigating",
+			Timestamp:   "2026-07-26 20:40",
+		},
+	}
+
+	return c.JSON(http.StatusOK, alerts)
+}
+
+type FirewallRule struct {
+	ID     int    `json:"id"`
+	Name   string `json:"name"`
+	Type   string `json:"type"`
+	Action string `json:"action"`
+	Status string `json:"status"`
+}
+
+func firewallHandler(c echo.Context) error {
+	rules := []FirewallRule{
+		{
+			ID:     1,
+			Name:   "Prompt Injection Protection",
+			Type:   "Prompt",
+			Action: "Block",
+			Status: "Enabled",
+		},
+		{
+			ID:     2,
+			Name:   "Sensitive Data Detection",
+			Type:   "DLP",
+			Action: "Flag",
+			Status: "Enabled",
+		},
+		{
+			ID:     3,
+			Name:   "SQL Injection Filter",
+			Type:   "Input",
+			Action: "Block",
+			Status: "Enabled",
+		},
+		{
+			ID:     4,
+			Name:   "Jailbreak Detection",
+			Type:   "Prompt",
+			Action: "Block",
+			Status: "Disabled",
+		},
+	}
+
+	return c.JSON(http.StatusOK, rules)
+}
+
+type DLPEvent struct {
+	ID          int    `json:"id"`
+	DataType    string `json:"dataType"`
+	Source      string `json:"source"`
+	Destination string `json:"destination"`
+	Severity    string `json:"severity"`
+	Status      string `json:"status"`
+}
+
+func dlpHandler(c echo.Context) error {
+	events := []DLPEvent{
+		{
+			ID:          1,
+			DataType:    "Email Address",
+			Source:      "User Prompt",
+			Destination: "External LLM",
+			Severity:    "High",
+			Status:      "Blocked",
+		},
+		{
+			ID:          2,
+			DataType:    "Phone Number",
+			Source:      "User Prompt",
+			Destination: "External LLM",
+			Severity:    "Medium",
+			Status:      "Flagged",
+		},
+		{
+			ID:          3,
+			DataType:    "API Key",
+			Source:      "Application",
+			Destination: "External Service",
+			Severity:    "High",
+			Status:      "Blocked",
+		},
+		{
+			ID:          4,
+			DataType:    "Personal Information",
+			Source:      "User Prompt",
+			Destination: "Internal Model",
+			Severity:    "Low",
+			Status:      "Allowed",
+		},
+	}
+
+	return c.JSON(http.StatusOK, events)
+}
+
+type AnalyticsCards struct {
+	TotalRequests  int    `json:"totalRequests"`
+	ThreatsBlocked int    `json:"threatsBlocked"`
+	SafePromptRate string `json:"safePromptRate"`
+	ActiveModels   int    `json:"activeModels"`
+}
+
+func analyticsCardsHandler(c echo.Context) error {
+	data := AnalyticsCards{
+		TotalRequests:  12548,
+		ThreatsBlocked: 342,
+		SafePromptRate: "97%",
+		ActiveModels:   6,
+	}
+
+	return c.JSON(http.StatusOK, data)
+}
+
+type RequestChartData struct {
+	Day      string `json:"day"`
+	Requests int    `json:"requests"`
+}
+
+func requestsChartHandler(c echo.Context) error {
+	data := []RequestChartData{
+		{Day: "Mon", Requests: 4200},
+		{Day: "Tue", Requests: 5100},
+		{Day: "Wed", Requests: 4800},
+		{Day: "Thu", Requests: 6200},
+		{Day: "Fri", Requests: 7100},
+		{Day: "Sat", Requests: 4300},
+		{Day: "Sun", Requests: 3900},
+	}
+
+	return c.JSON(http.StatusOK, data)
+}
+
+type ThreatChartData struct {
+	Name  string `json:"name"`
+	Value int    `json:"value"`
+}
+
+func threatPieChartHandler(c echo.Context) error {
+	data := []ThreatChartData{
+		{Name: "Prompt Injection", Value: 35},
+		{Name: "Jailbreak", Value: 25},
+		{Name: "PII Leakage", Value: 20},
+		{Name: "Safe Requests", Value: 20},
+	}
+
+	return c.JSON(http.StatusOK, data)
+}
+
+type ModelUsageData struct {
+	Model string `json:"model"`
+	Usage int    `json:"usage"`
+}
+
+func modelUsageChartHandler(c echo.Context) error {
+	data := []ModelUsageData{
+		{Model: "GPT-4", Usage: 5200},
+		{Model: "Claude", Usage: 3100},
+		{Model: "Gemini", Usage: 2600},
+		{Model: "Llama 3", Usage: 1900},
+	}
+
+	return c.JSON(http.StatusOK, data)
+}
+
+type User struct {
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	Email     string `json:"email"`
+	Role      string `json:"role"`
+	Status    string `json:"status"`
+	LastLogin string `json:"lastLogin"`
+}
+
+func usersHandler(c echo.Context) error {
+	users := []User{
+		{
+			ID:        1,
+			Name:      "Alice Johnson",
+			Email:     "alice@company.com",
+			Role:      "Admin",
+			Status:    "Active",
+			LastLogin: "Today, 09:15 AM",
+		},
+		{
+			ID:        2,
+			Name:      "Bob Smith",
+			Email:     "bob@company.com",
+			Role:      "Security Analyst",
+			Status:    "Active",
+			LastLogin: "Today, 08:42 AM",
+		},
+		{
+			ID:        3,
+			Name:      "Charlie Brown",
+			Email:     "charlie@company.com",
+			Role:      "Viewer",
+			Status:    "Inactive",
+			LastLogin: "Yesterday, 06:30 PM",
+		},
+		{
+			ID:        4,
+			Name:      "David Wilson",
+			Email:     "david@company.com",
+			Role:      "Security Analyst",
+			Status:    "Active",
+			LastLogin: "Today, 10:05 AM",
+		},
+	}
+
+	return c.JSON(http.StatusOK, users)
+}
+
+type Model struct {
+	ID       int    `json:"id"`
+	Name     string `json:"name"`
+	Provider string `json:"provider"`
+	Version  string `json:"version"`
+	Status   string `json:"status"`
+}
+
+func modelsHandler(c echo.Context) error {
+	models := []Model{
+		{
+			ID:       1,
+			Name:     "GPT-4o",
+			Provider: "OpenAI",
+			Version:  "2026.1",
+			Status:   "Online",
+		},
+		{
+			ID:       2,
+			Name:     "Claude 4",
+			Provider: "Anthropic",
+			Version:  "4.0",
+			Status:   "Maintenance",
+		},
+		{
+			ID:       3,
+			Name:     "Gemini 2.5",
+			Provider: "Google",
+			Version:  "2.5",
+			Status:   "Offline",
+		},
+		{
+			ID:       4,
+			Name:     "Llama 3.3",
+			Provider: "Meta",
+			Version:  "3.3",
+			Status:   "Online",
+		},
+	}
+
+	return c.JSON(http.StatusOK, models)
+}
+
+type AuditLog struct {
+	Timestamp string `json:"timestamp"`
+	User      string `json:"user"`
+	Action    string `json:"action"`
+	Status    string `json:"status"`
+}
+
+func auditLogsHandler(c echo.Context) error {
+	logs := []AuditLog{
+		{
+			Timestamp: "26 Jul 2026, 10:15 PM",
+			User:      "admin",
+			Action:    "Updated Firewall Rules",
+			Status:    "Success",
+		},
+		{
+			Timestamp: "26 Jul 2026, 09:42 PM",
+			User:      "security_analyst",
+			Action:    "Blocked Prompt Injection",
+			Status:    "Warning",
+		},
+		{
+			Timestamp: "26 Jul 2026, 08:58 PM",
+			User:      "system",
+			Action:    "User Login Failed",
+			Status:    "Failed",
+		},
+	}
+
+	return c.JSON(http.StatusOK, logs)
+}
+
+type SettingSection struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+}
+
+func settingsHandler(c echo.Context) error {
+	settings := []SettingSection{
+		{
+			Title:       "General Settings",
+			Description: "Manage application configuration and preferences.",
+		},
+		{
+			Title:       "Security Settings",
+			Description: "Configure authentication, password policies, and access controls.",
+		},
+		{
+			Title:       "Notification Settings",
+			Description: "Choose when and how security alerts are delivered.",
+		},
+	}
+
+	return c.JSON(http.StatusOK, settings)
 }
 
 type chatRequest struct {

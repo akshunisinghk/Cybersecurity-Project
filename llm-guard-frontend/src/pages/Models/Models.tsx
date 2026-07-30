@@ -1,6 +1,4 @@
-import ModelTable from "../../components/models/ModelTable";
-import SecurityMetricCard from "../../components/dashboard/SecurityMetricCard";
-import { models } from "../../mock/models";
+import { useEffect, useState } from "react";
 import {
   Cpu,
   CheckCircle,
@@ -8,7 +6,28 @@ import {
   Wrench,
 } from "lucide-react";
 
+import ModelTable from "../../components/models/ModelTable";
+import SecurityMetricCard from "../../components/dashboard/SecurityMetricCard";
+
+import type { Model } from "../../types/model";
+import { getModels } from "../../services/models";
+
 const Models = () => {
+  const [models, setModels] = useState<Model[]>([]);
+
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        const data = await getModels();
+        setModels(data);
+      } catch (error) {
+        console.error("Failed to fetch models:", error);
+      }
+    };
+
+    fetchModels();
+  }, []);
+
   const totalModels = models.length;
 
   const onlineModels = models.filter(
@@ -65,7 +84,7 @@ const Models = () => {
         />
       </div>
 
-      <ModelTable />
+      <ModelTable models={models} />
     </div>
   );
 };

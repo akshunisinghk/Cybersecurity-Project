@@ -1,4 +1,4 @@
-import type { User } from "../../mock/users";
+import type { User } from "../../types/user";
 import UserStatusBadge from "./UserStatusBadge";
 import { Pencil, Trash2 } from "lucide-react";
 

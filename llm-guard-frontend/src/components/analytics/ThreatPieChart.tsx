@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   PieChart,
   Pie,
@@ -7,7 +8,10 @@ import {
   Legend,
 } from "recharts";
 
-import { threatData } from "../../mock/analytics";
+import {
+  getThreatChart,
+  type ThreatChartData,
+} from "../../services/analytics";
 
 const COLORS = [
   "#EF4444",
@@ -17,6 +21,21 @@ const COLORS = [
 ];
 
 const ThreatPieChart = () => {
+  const [threatData, setThreatData] = useState<ThreatChartData[]>([]);
+
+  useEffect(() => {
+    const fetchThreatData = async () => {
+      try {
+        const data = await getThreatChart();
+        setThreatData(data);
+      } catch (error) {
+        console.error("Failed to fetch threat chart:", error);
+      }
+    };
+
+    fetchThreatData();
+  }, []);
+
   return (
     <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
       <h2 className="mb-6 text-xl font-semibold text-white">
@@ -42,7 +61,6 @@ const ThreatPieChart = () => {
             </Pie>
 
             <Tooltip />
-
             <Legend />
           </PieChart>
         </ResponsiveContainer>

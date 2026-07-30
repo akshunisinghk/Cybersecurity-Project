@@ -1,8 +1,22 @@
-import { useState } from "react";
-import { dlpEvents, type DLPEvent } from "../../mock/dlp";
+import { useEffect, useState } from "react";
+import { getDLPEvents } from "../../services/dlp";
+import type { DLPEvent } from "../../types/dlp";
 
 const DLP = () => {
-  const [events] = useState<DLPEvent[]>(dlpEvents);
+  const [events, setEvents] = useState<DLPEvent[]>([]);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const data = await getDLPEvents();
+        setEvents(data);
+      } catch (error) {
+        console.error("Failed to fetch DLP events:", error);
+      }
+    };
+
+    fetchEvents();
+  }, []);
 
   return (
     <div className="p-6 text-gray-200">
@@ -32,13 +46,11 @@ const DLP = () => {
                 key={event.id}
                 className="border-t border-gray-700 hover:bg-gray-800"
               >
-                <td className="p-3 text-gray-200">{event.dataType}</td>
+                <td className="p-3">{event.dataType}</td>
 
-                <td className="p-3 text-gray-300">{event.source}</td>
+                <td className="p-3">{event.source}</td>
 
-                <td className="p-3 text-gray-300">
-                  {event.destination}
-                </td>
+                <td className="p-3">{event.destination}</td>
 
                 <td
                   className={`p-3 font-medium ${

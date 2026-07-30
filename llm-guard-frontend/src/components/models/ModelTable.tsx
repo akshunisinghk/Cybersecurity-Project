@@ -1,7 +1,11 @@
-import { models } from "../../mock/models";
+import type { Model } from "../../types/model";
 import ModelStatusBadge from "./ModelStatusBadge";
 
-const ModelTable = () => {
+interface ModelTableProps {
+  models: Model[];
+}
+
+const ModelTable = ({ models }: ModelTableProps) => {
   return (
     <div className="overflow-x-auto rounded-xl border border-gray-700 bg-gray-900 shadow-lg">
       <table className="min-w-full">
