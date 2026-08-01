@@ -11,7 +11,9 @@ import {
   ClipboardList,
   Settings,
   User,
+  MessageSquare,
 } from "lucide-react";
+
 
 export const navigation = [
   {
@@ -85,4 +87,11 @@ export const navigation = [
     icon: User,
     path: "/profile",
   },
+
+  {
+  title: "AI Chat",
+  icon: MessageSquare,
+  path: "/chat",
+},
+
 ];
