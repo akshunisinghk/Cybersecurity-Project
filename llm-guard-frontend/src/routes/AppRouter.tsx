@@ -19,6 +19,7 @@ import Models from "../pages/Models";
 import AuditLogs from "../pages/AuditLogs";
 import Settings from "../pages/Settings";
 import Profile from "../pages/Profile";
+import ChatPage from "../pages/Chat";
 
 import { ROUTES } from "../constants/routes";
 
@@ -53,6 +54,9 @@ const AppRouter = () => {
           <Route path={ROUTES.AUDIT_LOGS} element={<AuditLogs />} />
           <Route path={ROUTES.SETTINGS} element={<Settings />} />
           <Route path={ROUTES.PROFILE} element={<Profile />} />
+
+          {/* Chat Page */}
+          <Route path="/chat" element={<ChatPage />} />
         </Route>
 
         {/* Default Route */}
@@ -61,7 +65,7 @@ const AppRouter = () => {
           element={<Navigate to={ROUTES.DASHBOARD} replace />}
         />
 
-        {/* 404 Route */}
+        {/* 404 */}
         <Route
           path="*"
           element={<Navigate to={ROUTES.DASHBOARD} replace />}

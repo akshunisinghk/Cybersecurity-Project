@@ -10,7 +10,6 @@ const Analytics = () => {
         <h1 className="text-3xl font-bold text-white">
           Analytics Dashboard
         </h1>
-
         <p className="mt-2 text-slate-400">
           Monitor AI requests, blocked threats and model usage.
         </p>
