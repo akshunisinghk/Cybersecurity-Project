@@ -18,7 +18,7 @@ func newSecurityClient(baseURL string) *securityClient {
 	return &securityClient{
 		baseURL: baseURL,
 		client: &http.Client{
-			Timeout: 10 * time.Second,
+			Timeout: 120 * time.Second,
 		},
 	}
 }

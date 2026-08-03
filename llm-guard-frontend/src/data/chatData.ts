@@ -85,13 +85,9 @@ export const suggestedPrompts: SuggestedPrompt[] = [
 // -------------------------
 
 export const dummySecurityAnalysis: SecurityAnalysis = {
-  risk: "Low",
-  threatScore: 8,
-  tokens: 156,
-  processingTime: "0.84 s",
-  piiDetected: false,
-  promptInjection: false,
-  blockedKeywords: [],
+  decision: "ALLOW",
+  riskScore: 0,
+  sanitizedPrompt: "",
 };
 
 // -------------------------

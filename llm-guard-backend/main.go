@@ -544,7 +544,13 @@ type chatRequest struct {
 }
 
 type chatResponse struct {
-	Answer string `json:"answer"`
+	Answer             string      `json:"answer"`
+	Decision           string      `json:"decision"`
+	RiskScore          int         `json:"risk_score"`
+	SanitizedPrompt    string      `json:"sanitized_prompt"`
+	PromptInjection    interface{} `json:"prompt_injection"`
+	JailbreakDetection interface{} `json:"jailbreak_detection"`
+	AIDetection        interface{} `json:"ai_detection"`
 }
 
 type ollamaGenerateRequest struct {
@@ -569,7 +575,7 @@ func newOllamaClient(baseURL, model string) *ollamaClient {
 		baseURL: baseURL,
 		model:   model,
 		httpClient: &http.Client{
-			Timeout: 30 * time.Second,
+			Timeout: 120 * time.Second,
 		},
 	}
 }
@@ -630,7 +636,10 @@ func chat(
 		}
 
 		return c.JSON(http.StatusOK, chatResponse{
-			Answer: result.Response,
+			Answer:          result.Response,
+			Decision:        securityResult.Decision,
+			RiskScore:       securityResult.RiskScore,
+			SanitizedPrompt: securityResult.SanitizedPrompt,
 		})
 	}
 }

@@ -3,10 +3,8 @@
 import {
   ShieldCheck,
   AlertTriangle,
-  Clock3,
+  CheckCircle,
   FileText,
-  Lock,
-  Ban,
 } from "lucide-react";
 
 import type { SecurityAnalysis } from "../../types/chat";
@@ -16,14 +14,18 @@ interface SecurityCardProps {
 }
 
 const SecurityCard = ({ analysis }: SecurityCardProps) => {
-  const riskColor = {
-    Low: "text-green-600",
-    Medium: "text-yellow-500",
-    High: "text-red-600",
-  };
+  const isBlocked = analysis.decision === "BLOCK";
+
+  const riskColor =
+    analysis.riskScore >= 70
+      ? "text-red-500"
+      : analysis.riskScore >= 40
+      ? "text-yellow-500"
+      : "text-green-500";
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+
       <div className="mb-5 flex items-center gap-2">
         <ShieldCheck className="text-blue-600" size={22} />
         <h2 className="text-lg font-semibold">
@@ -31,108 +33,77 @@ const SecurityCard = ({ analysis }: SecurityCardProps) => {
         </h2>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="space-y-4">
 
-        <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 dark:bg-slate-800">
-          <AlertTriangle className={riskColor[analysis.risk]} />
-          <div>
-            <p className="text-sm text-gray-500">Risk Level</p>
-            <p className={`font-semibold ${riskColor[analysis.risk]}`}>
-              {analysis.risk}
-            </p>
-          </div>
-        </div>
+        {/* Decision */}
+        <div className="flex items-center justify-between rounded-lg bg-slate-100 p-3 dark:bg-slate-800">
+          <span>Decision</span>
 
-        <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 dark:bg-slate-800">
-          <ShieldCheck className="text-blue-600" />
-          <div>
-            <p className="text-sm text-gray-500">Threat Score</p>
-            <p className="font-semibold">
-              {analysis.threatScore}%
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 dark:bg-slate-800">
-          <FileText className="text-indigo-500" />
-          <div>
-            <p className="text-sm text-gray-500">Tokens</p>
-            <p className="font-semibold">
-              {analysis.tokens}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 dark:bg-slate-800">
-          <Clock3 className="text-orange-500" />
-          <div>
-            <p className="text-sm text-gray-500">Processing Time</p>
-            <p className="font-semibold">
-              {analysis.processingTime}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 dark:bg-slate-800">
-          <Lock
-            className={
-              analysis.piiDetected
-                ? "text-red-500"
-                : "text-green-600"
-            }
-          />
-          <div>
-            <p className="text-sm text-gray-500">
-              PII Detection
-            </p>
-            <p className="font-semibold">
-              {analysis.piiDetected ? "Detected" : "Not Detected"}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 dark:bg-slate-800">
-          <Ban
-            className={
-              analysis.promptInjection
-                ? "text-red-500"
-                : "text-green-600"
-            }
-          />
-          <div>
-            <p className="text-sm text-gray-500">
-              Prompt Injection
-            </p>
-            <p className="font-semibold">
-              {analysis.promptInjection
-                ? "Detected"
-                : "Not Detected"}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-5 rounded-lg bg-gray-50 p-3 dark:bg-slate-800">
-        <p className="mb-2 text-sm font-medium">
-          Blocked Keywords
-        </p>
-
-        {analysis.blockedKeywords.length === 0 ? (
-          <span className="rounded-full bg-green-100 px-3 py-1 text-sm text-green-700">
-            None
+          <span
+            className={`rounded-full px-3 py-1 text-sm font-semibold ${
+              isBlocked
+                ? "bg-red-100 text-red-600"
+                : "bg-green-100 text-green-600"
+            }`}
+          >
+            {analysis.decision}
           </span>
-        ) : (
-          <div className="flex flex-wrap gap-2">
-            {analysis.blockedKeywords.map((keyword) => (
-              <span
-                key={keyword}
-                className="rounded-full bg-red-100 px-3 py-1 text-sm text-red-700"
-              >
-                {keyword}
-              </span>
-            ))}
+        </div>
+
+        {/* Risk Score */}
+        <div className="rounded-lg bg-slate-100 p-3 dark:bg-slate-800">
+          <div className="mb-2 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className={riskColor} />
+              <span>Risk Score</span>
+            </div>
+
+            <span className={`font-bold ${riskColor}`}>
+              {analysis.riskScore}%
+            </span>
           </div>
-        )}
+
+          <div className="h-2 overflow-hidden rounded-full bg-slate-300 dark:bg-slate-700">
+            <div
+              className="h-full rounded-full bg-blue-600"
+              style={{
+                width: `${analysis.riskScore}%`,
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Sanitized Prompt */}
+        <div className="rounded-lg bg-slate-100 p-3 dark:bg-slate-800">
+          <div className="mb-2 flex items-center gap-2">
+            <FileText size={18} />
+            <span className="font-medium">
+              Sanitized Prompt
+            </span>
+          </div>
+
+          <p className="break-words text-sm text-slate-500 dark:text-slate-300">
+            {analysis.sanitizedPrompt || "-"}
+          </p>
+        </div>
+
+        {/* Status */}
+        <div className="flex items-center gap-2 rounded-lg bg-slate-100 p-3 dark:bg-slate-800">
+          <CheckCircle
+            className={
+              isBlocked
+                ? "text-red-500"
+                : "text-green-500"
+            }
+          />
+
+          <span>
+            {isBlocked
+              ? "Prompt Blocked"
+              : "Prompt Passed Security Checks"}
+          </span>
+        </div>
+
       </div>
     </div>
   );

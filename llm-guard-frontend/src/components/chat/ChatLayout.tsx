@@ -35,7 +35,7 @@ const ChatLayout = () => {
   };
 
   return (
-    <div className="flex h-[calc(100vh-80px)] overflow-hidden rounded-xl bg-gray-100 dark:bg-slate-950">
+    <div className="flex h-full overflow-hidden rounded-xl bg-gray-100 dark:bg-slate-950">
 
       {/* Sidebar */}
       <ChatSidebar

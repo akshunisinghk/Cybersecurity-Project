@@ -1,12 +1,13 @@
 // src/hooks/useChat.ts
 
 import { useState } from "react";
-import type { ChatMessage } from "../types/chat";
-import {
-  initialMessages,
-  aiReplies,
-  dummySecurityAnalysis,
-} from "../data/chatData";
+import axios from "axios";
+import type {
+  ChatMessage,
+  SecurityAnalysis,
+} from "../types/chat";
+import { initialMessages } from "../data/chatData";
+import api from "../services/api";
 
 const getCurrentTime = () => {
   return new Date().toLocaleTimeString([], {
@@ -21,9 +22,14 @@ export const useChat = () => {
 
   const [isTyping, setIsTyping] = useState(false);
 
-  const [analysis] = useState(dummySecurityAnalysis);
+  const [analysis, setAnalysis] =
+    useState<SecurityAnalysis>({
+      decision: "ALLOW",
+      riskScore: 0,
+      sanitizedPrompt: "",
+    });
 
-  const sendMessage = (text: string) => {
+  const sendMessage = async (text: string) => {
     if (!text.trim()) return;
 
     const userMessage: ChatMessage = {
@@ -37,25 +43,81 @@ export const useChat = () => {
 
     setIsTyping(true);
 
-    setTimeout(() => {
-      const randomReply =
-        aiReplies[Math.floor(Math.random() * aiReplies.length)];
+    try {
+      const response = await api.post("/chat", {
+        prompt: text,
+      });
+
+      const data = response.data;
+
+      setAnalysis({
+        decision: data.decision,
+        riskScore: data.risk_score,
+        sanitizedPrompt: data.sanitized_prompt,
+      });
 
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: randomReply,
+        content: data.answer,
         timestamp: getCurrentTime(),
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
 
+    } catch (error) {
+      console.error(error);
+
+      if (axios.isAxiosError(error) && error.response) {
+
+        // BLOCKED PROMPT
+        if (error.response.status === 403) {
+
+          const data = error.response.data;
+
+          setAnalysis({
+            decision: data.decision,
+            riskScore: data.risk_score,
+            sanitizedPrompt: text,
+          });
+
+          const assistantMessage: ChatMessage = {
+            id: (Date.now() + 1).toString(),
+            role: "assistant",
+            content:
+              `🚫 ${data.message}\n\nReason: ${data.reason}`,
+            timestamp: getCurrentTime(),
+          };
+
+          setMessages((prev) => [...prev, assistantMessage]);
+
+          return;
+        }
+      }
+
+      const assistantMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content:
+          "❌ Failed to connect to the AI service.",
+        timestamp: getCurrentTime(),
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+
+    } finally {
       setIsTyping(false);
-    }, 1200);
+    }
   };
 
   const clearChat = () => {
     setMessages(initialMessages);
+
+    setAnalysis({
+      decision: "ALLOW",
+      riskScore: 0,
+      sanitizedPrompt: "",
+    });
   };
 
   return {
