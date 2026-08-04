@@ -3,5 +3,5 @@ export interface Model {
   name: string;
   provider: string;
   version: string;
-  status: "Online" | "Offline";
+  status: "Online" | "Offline" | "Maintenance";
 }

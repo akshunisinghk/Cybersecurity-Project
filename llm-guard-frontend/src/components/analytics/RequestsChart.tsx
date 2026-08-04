@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -8,9 +9,27 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import { requestData } from "../../mock/analytics";
+import {
+  getRequestChart,
+  type RequestChartData,
+} from "../../services/analytics";
 
 const RequestsChart = () => {
+  const [requestData, setRequestData] = useState<RequestChartData[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getRequestChart();
+        setRequestData(data);
+      } catch (error) {
+        console.error("Failed to fetch request chart:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
       <h2 className="mb-6 text-xl font-semibold text-white">

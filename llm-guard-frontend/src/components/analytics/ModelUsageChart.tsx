@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   ResponsiveContainer,
   BarChart,
@@ -8,9 +9,27 @@ import {
   Tooltip,
 } from "recharts";
 
-import { modelUsage } from "../../mock/analytics";
+import {
+  getModelUsage,
+  type ModelUsageData,
+} from "../../services/analytics";
 
 const ModelUsageChart = () => {
+  const [modelUsage, setModelUsage] = useState<ModelUsageData[]>([]);
+
+  useEffect(() => {
+    const fetchModelUsage = async () => {
+      try {
+        const data = await getModelUsage();
+        setModelUsage(data);
+      } catch (error) {
+        console.error("Failed to fetch model usage:", error);
+      }
+    };
+
+    fetchModelUsage();
+  }, []);
+
   return (
     <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
       <h2 className="mb-6 text-xl font-semibold text-white">

@@ -1,58 +1,40 @@
+import { useEffect, useState } from "react";
+
 import {
-  Activity,
-  BrainCircuit,
-  ShieldAlert,
-  TrendingUp,
-} from "lucide-react";
-
-import StatCard from "../dashboard/KPI/StatCard";
-
-const cards = [
-  {
-    title: "Total Requests",
-    value: "12,548",
-    change: "+12%",
-    color: "text-cyan-400",
-    icon: Activity,
-  },
-  {
-    title: "Threats Blocked",
-    value: "342",
-    change: "+8%",
-    color: "text-red-400",
-    icon: ShieldAlert,
-  },
-  {
-    title: "Safe Prompt Rate",
-    value: "97%",
-    change: "+2%",
-    color: "text-green-400",
-    icon: TrendingUp,
-  },
-  {
-    title: "Active Models",
-    value: "6",
-    change: "Online",
-    color: "text-purple-400",
-    icon: BrainCircuit,
-  },
-];
+  getAnalyticsCards,
+  type AnalyticsCardsData,
+} from "../../services/analytics";
 
 const AnalyticsCards = () => {
-  return (
-    <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-      {cards.map((card) => (
-        <StatCard
-          key={card.title}
-          title={card.title}
-          value={card.value}
-          change={card.change}
-          color={card.color}
-          icon={card.icon}
-        />
-      ))}
-    </div>
-  );
+  const [data, setData] = useState<AnalyticsCardsData | null>(null);
+
+  useEffect(() => {
+    const fetchCards = async () => {
+      try {
+        const response = await getAnalyticsCards();
+        setData(response);
+      } catch (error) {
+        console.error("Failed to fetch analytics cards:", error);
+      }
+    };
+
+    fetchCards();
+  }, []);
+
+  if (!data) {
+    return (
+      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="text-white">Loading...</div>
+      </div>
+    );
+  }
+
+
+ return (
+  <div className="text-white text-3xl p-10">
+    Analytics Working
+  </div>
+);
 };
 
 export default AnalyticsCards;

@@ -2,8 +2,6 @@
 
 export type MessageRole = "user" | "assistant";
 
-export type RiskLevel = "Low" | "Medium" | "High";
-
 export interface ChatMessage {
   id: string;
   role: MessageRole;
@@ -18,13 +16,9 @@ export interface ChatHistory {
 }
 
 export interface SecurityAnalysis {
-  risk: RiskLevel;
-  threatScore: number;
-  tokens: number;
-  processingTime: string;
-  piiDetected: boolean;
-  promptInjection: boolean;
-  blockedKeywords: string[];
+  decision: string;
+  riskScore: number;
+  sanitizedPrompt: string;
 }
 
 export interface SuggestedPrompt {

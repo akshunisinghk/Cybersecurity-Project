@@ -48,7 +48,7 @@ const Users = () => {
     switch (role) {
       case "Admin":
         return "bg-red-500/20 text-red-400";
-      case "Analyst":
+      case "Security Analyst":
         return "bg-blue-500/20 text-blue-400";
       case "Viewer":
         return "bg-purple-500/20 text-purple-400";

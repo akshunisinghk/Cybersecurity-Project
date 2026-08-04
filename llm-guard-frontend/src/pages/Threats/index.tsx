@@ -1,13 +1,28 @@
-import { useMemo, useState } from "react";
-import { threats } from "../../mock/threats";
+import { useEffect, useMemo, useState } from "react";
+import { getThreats } from "../../services/threats";
+import type { Threat } from "../../mock/threats";
 
 const Threats = () => {
+  const [threatList, setThreatList] = useState<Threat[]>([]);
   const [search, setSearch] = useState("");
   const [severityFilter, setSeverityFilter] = useState("All");
   const [sortOrder, setSortOrder] = useState("Newest");
 
+  useEffect(() => {
+    const fetchThreats = async () => {
+      try {
+        const data = await getThreats();
+        setThreatList(data);
+      } catch (error) {
+        console.error("Failed to load threats:", error);
+      }
+    };
+
+    fetchThreats();
+  }, []);
+
   const filteredThreats = useMemo(() => {
-    let data = [...threats];
+    let data = [...threatList];
 
     // Search
     if (search) {
@@ -33,7 +48,7 @@ const Threats = () => {
     }
 
     return data;
-  }, [search, severityFilter, sortOrder]);
+  }, [threatList, search, severityFilter, sortOrder]);
 
   return (
     <div className="p-6 text-gray-200">
